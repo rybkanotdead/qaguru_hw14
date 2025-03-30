@@ -1,5 +1,6 @@
 import pytest
 import os
+import logging
 import time
 import requests
 from dotenv import load_dotenv
@@ -8,6 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from utils import attach
 
+logger = logging.getLogger((__name__))
 DEFAULT_BROWSER_VERSION = "128.0"
 DEFAULT_WINDOW_WIDTH = int(os.getenv("BROWSER_WINDOW_WIDTH", 1700))
 DEFAULT_WINDOW_HEIGHT = int(os.getenv("BROWSER_WINDOW_HEIGHT", 1080))
@@ -63,7 +65,7 @@ def setup_browser(request):
         options.capabilities.update(selenoid_capabilities)
 
         browser.config.driver = webdriver.Remote(
-            command_executor=f"http://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
+            command_executor=f"https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
             options=options,
         )
     else:
