@@ -47,13 +47,13 @@ def setup_browser(request):
 
     options.capabilities.update(selenoid_capabilities)
     browser.config.driver = webdriver.Remote(
-        command_executor=f"https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
+        command_executor=f"http://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
         options=options,
     )
-    browser.wait_until(lambda: browser.driver.current_url.startswith("https://www.litres.ru/"))
+    #browser.wait_until(lambda: browser.driver.current_url.startswith("https://www.litres.ru/"))
 
     yield
-    browser.wait_until(lambda: not browser.driver.session_id)
+    #browser.wait_until(lambda: not browser.driver.session_id)
     attach.add_html(browser)
     attach.add_screenshot(browser)
     attach.add_logs(browser)
