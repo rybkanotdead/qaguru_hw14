@@ -24,18 +24,19 @@ def setup_browser(request):
     browser_version = request.config.getoption("--browser_version")
     browser.config.base_url = "https://www.litres.ru/"
     browser.config.timeout = 10
+    browser.config.window_width = 1700
+    browser.config.window_height = 1080
 
     driver_options = webdriver.ChromeOptions()
     driver_options.page_load_strategy = "eager"
-    browser.config.window_width = 1700
-    browser.config.window_height = 1080
 
     # Получаем данные Selenoid
     selenoid_login = os.getenv("SELENOID_LOGIN")
     selenoid_pass = os.getenv("SELENOID_PASS")
     selenoid_url = os.getenv("SELENOID_URL")
 
-    if selenoid_url:  # Если Selenoid URL задан, запускаем удалённо
+    if selenoid_url:
+        assert selenoid_login and selenoid_pass, "Для запуска в Selenoid необходимо задать SELENOID_LOGIN и SELENOID_PASS"
         print(f"Запуск через Selenoid: {selenoid_url}")
         options = Options()
         selenoid_capabilities = {
@@ -49,18 +50,20 @@ def setup_browser(request):
             command_executor=f"http://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
             options=options,
         )
-    else:  # Если нет Selenoid, запускаем локально
+    else:
         print("SELENOID_URL не задан! Запуск локального Chrome.")
         browser.config.driver = webdriver.Chrome(options=driver_options)
 
-    browser.wait_until(lambda: browser.driver.current_url.startswith("https://www.litres.ru/"))
+    browser.open("/")
 
     yield
 
     # Завершение теста и добавление аттачей
-    if browser.driver.session_id:
-        attach.add_html(browser)
-        attach.add_screenshot(browser)
-        attach.add_logs(browser)
-        attach.add_video(browser)
+    try:
+        if browser.driver.session_id:
+            attach.add_html(browser)
+            attach.add_screenshot(browser)
+            attach.add_logs(browser)
+            attach.add_video(browser)
+    finally:
         browser.quit()
