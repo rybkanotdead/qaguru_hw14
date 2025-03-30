@@ -71,7 +71,7 @@ def setup_browser(request):
     else:
         print("SELENOID_URL не задан! Запуск локального Chrome.")
         browser.config.driver = webdriver.Chrome(options=driver_options)
-
+    time.sleep(5)
     browser.open("/")
 
     yield
