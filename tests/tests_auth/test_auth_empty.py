@@ -4,7 +4,7 @@ from Litres_tests.auth_litres import AuthorisationLitres
 
 @allure.tag("web")
 @allure.severity(Severity.MINOR)
-@allure.label("owner", "KING_PLANES")
+@allure.label("owner", "Rybka")
 @allure.feature("Авторизация пользователя")
 @allure.story("Пользователь не может авторизоваться с пустым полем 'почта или логин'")
 @allure.description("Простые тесты на проверку авторизации пользователя")

@@ -11,7 +11,7 @@ authorisation_litres = AuthorisationLitres()
 
 @allure.tag("web")
 @allure.severity(Severity.MINOR)
-@allure.label("owner", "KING_PLANES")
+@allure.label("owner", "Rybka")
 @allure.feature("Авторизация пользователя")
 @allure.story("Пользователь может авторизоваться с валидными данными")
 @allure.description("Простые тесты на проверку авторизации пользователя")

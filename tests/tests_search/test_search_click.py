@@ -4,7 +4,7 @@ from Litres_tests.search_litres import SearchLitres
 
 @allure.tag("web")
 @allure.severity(Severity.MINOR)
-@allure.label("owner", "KING_PLANES")
+@allure.label("owner", "Rybka")
 @allure.feature("Проверка поиска")
 @allure.story("Пользователь может подтвердить результаты ввода кнопкой 'PressEnter на клавиатуре'")
 @allure.description("Простые тесты на проверку поиска")
