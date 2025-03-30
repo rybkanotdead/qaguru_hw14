@@ -1,17 +1,28 @@
 import pytest
+import os
+import time
+import requests
+from dotenv import load_dotenv
 from selene.support.shared import browser
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from utils import attach
-from dotenv import load_dotenv
-import os
-import time
 
 DEFAULT_BROWSER_VERSION = "128.0"
+DEFAULT_WINDOW_WIDTH = int(os.getenv("BROWSER_WINDOW_WIDTH", 1700))
+DEFAULT_WINDOW_HEIGHT = int(os.getenv("BROWSER_WINDOW_HEIGHT", 1080))
 
 
 def pytest_addoption(parser):
     parser.addoption("--browser_version", default=DEFAULT_BROWSER_VERSION)
+
+
+def is_selenoid_available(url):
+    try:
+        response = requests.get(f"http://{url}/status", timeout=3)
+        return response.status_code == 200
+    except requests.exceptions.RequestException:
+        return False
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -24,8 +35,8 @@ def setup_browser(request):
     browser_version = request.config.getoption("--browser_version")
     browser.config.base_url = "https://www.litres.ru/"
     browser.config.timeout = 10
-    browser.config.window_width = 1700
-    browser.config.window_height = 1080
+    browser.config.window_width = DEFAULT_WINDOW_WIDTH
+    browser.config.window_height = DEFAULT_WINDOW_HEIGHT
 
     driver_options = webdriver.ChromeOptions()
     driver_options.page_load_strategy = "eager"
@@ -36,7 +47,12 @@ def setup_browser(request):
     selenoid_url = os.getenv("SELENOID_URL")
 
     if selenoid_url:
-        assert selenoid_login and selenoid_pass, "Для запуска в Selenoid необходимо задать SELENOID_LOGIN и SELENOID_PASS"
+        if not selenoid_login or not selenoid_pass:
+            pytest.exit("Для запуска в Selenoid необходимо задать SELENOID_LOGIN и SELENOID_PASS", returncode=1)
+
+        if not is_selenoid_available(selenoid_url):
+            pytest.exit(f"Selenoid недоступен по адресу {selenoid_url}", returncode=1)
+
         print(f"Запуск через Selenoid: {selenoid_url}")
         options = Options()
         selenoid_capabilities = {
